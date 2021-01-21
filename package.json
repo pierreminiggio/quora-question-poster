@@ -1,0 +1,23 @@
+{
+  "name": "@pierreminiggio/facebquora-question-poster",
+  "version": "1.0.0",
+  "description": "Posts questions on Quora",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pierreminiggio/facebquora-question-poster.git"
+  },
+  "author": "Pierre MINIGGIO",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pierreminiggio/facebquora-question-poster/issues"
+  },
+  "homepage": "https://github.com/pierreminiggio/facebquora-question-poster#readme",
+  "dependencies": {
+    "puppeteer": "^5.5.0"
+  }
+}
