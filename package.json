@@ -1,5 +1,5 @@
 {
-  "name": "@pierreminiggio/facebquora-question-poster",
+  "name": "@pierreminiggio/quora-question-poster",
   "version": "1.0.0",
   "description": "Posts questions on Quora",
   "main": "index.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pierreminiggio/facebquora-question-poster.git"
+    "url": "git+https://github.com/pierreminiggio/quora-question-poster.git"
   },
   "author": "Pierre MINIGGIO",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/pierreminiggio/facebquora-question-poster/issues"
+    "url": "https://github.com/pierreminiggio/quora-question-poster/issues"
   },
-  "homepage": "https://github.com/pierreminiggio/facebquora-question-poster#readme",
+  "homepage": "https://github.com/pierreminiggio/quora-question-poster#readme",
   "dependencies": {
     "puppeteer": "^5.5.0"
   }
