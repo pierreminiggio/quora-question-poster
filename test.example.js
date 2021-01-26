@@ -8,6 +8,7 @@ import post from './index.js'
         'Quora email',
         'Quora password',
         'Post content',
+        'Post Link if needed'
         {show: true}
     ))
 })()

@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/pierreminiggio/quora-question-poster#readme",
   "dependencies": {
+    "@pierreminiggio/puppeteer-text-typer": "github:pierreminiggio/puppeteer-text-typer",
     "puppeteer": "^5.5.0"
   }
 }

@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer'
+import type from '@pierreminiggio/puppeteer-text-typer'
 
 /**
  * @typedef {Object} QuoraQuestionPosterConfig
@@ -7,11 +8,12 @@ import puppeteer from 'puppeteer'
  * @param {string} login
  * @param {string} password
  * @param {string} content
+ * @param {?string} link
  * @param {QuoraQuestionnfig} config 
  * 
  * @returns {Promise<string>}
  */
-export default function (login, password, content, config = {}) {
+export default function (login, password, content, link, config = {}) {
 
     return new Promise(async (resolve, reject) => {
         
@@ -42,13 +44,15 @@ export default function (login, password, content, config = {}) {
 
             await page.waitForSelector(loginInputSelector)
             await page.waitForSelector(passwordInputSelector)
+            await page.waitForSelector(buttonSelector)
+
+            await page.waitForTimeout(3000)
 
             await page.evaluate((loginInputSelector, passwordInputSelector, login, password) => {
                 document.querySelector(loginInputSelector).value = login
                 document.querySelector(passwordInputSelector).value = password
             }, loginInputSelector, passwordInputSelector, login, password)
 
-            await page.waitForSelector(buttonSelector)
             await page.evaluate(buttonSelector => {
                 const button = document.querySelector(buttonSelector)
                 button.className = 'submit_button'
@@ -61,12 +65,14 @@ export default function (login, password, content, config = {}) {
             await page.click(askQuestionButtonSelector)
 
             const questionInputSelector = 'textarea'
-            console.log('waiting')
             await page.waitForSelector(questionInputSelector)
-            console.log('waited')
-            await page.evaluate((questionInputSelector, content) => {
-                document.querySelector(questionInputSelector).value = content
-            }, questionInputSelector, content)
+            await type(page, questionInputSelector, content.trim() + ' ')
+
+            if (link !== null) {
+                const linkInputSelector = 'input'
+                await page.waitForSelector(linkInputSelector)
+                await type(page, linkInputSelector, link)
+            }
 
             const submitQuestionButtonSelector = '.modal_content_inner button.qu-bg--blue'
             await page.click(submitQuestionButtonSelector)
@@ -102,10 +108,50 @@ export default function (login, password, content, config = {}) {
                 await browser.close()
                 reject(new Error('Unknown Error : "' + message + '"'))
             }
-            
-            console.log(message)
 
-            resolve('quora question id')
+            /**
+             * Accept all confirms
+             */
+            page.on('dialog', async dialog => {
+                await dialog.accept()
+            })
+            
+            const finishButtonSelector = '.modal_content_inner>div>div>div+div+div .puppeteer_test_modal_primary_button>button'
+            await page.waitForSelector(finishButtonSelector)
+            await page.click(finishButtonSelector)
+
+            await page.waitForTimeout(3000)
+
+            /**
+             * Invite to answser
+             */
+            await page.evaluate(() => {
+                const buttonsToClick = Array.from(document.querySelectorAll(
+                    '.modal_content_inner>div>div>div+div>div+div+div.q-flex>div+div .q-click-wrapper'
+                )).slice(0, 26)
+                console.log(buttonsToClick)
+                buttonsToClick.forEach(button => button.click())
+            })
+
+            await page.waitForTimeout(3000)
+
+            const finallyFinishButtonSelector = '.q-box[style*="display: initial"]>div>div>div>div+.modal_content_inner>div>div>div+div+div .puppeteer_test_modal_primary_button>button'
+            await page.waitForSelector(finallyFinishButtonSelector)
+            await page.click(finallyFinishButtonSelector)
+
+            await page.waitForTimeout(10000)
+            
+            await page.goto('https://fr.quora.com/content')
+
+            const lastQuestionLinkSelector = '.question_link'
+            await page.waitForSelector(lastQuestionLinkSelector)
+
+            const quoraId = await page.evaluate(lastQuestionLinkSelector => {
+                return document.querySelector(lastQuestionLinkSelector).href.split('https://fr.quora.com/unanswered/')[1]
+            }, lastQuestionLinkSelector)
+
+            await browser.close()
+            resolve(quoraId)
         } catch (e) {
             await browser.close()
             reject(e)
