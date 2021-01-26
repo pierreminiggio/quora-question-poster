@@ -73,26 +73,21 @@ export default function (login, password, content, config = {}) {
 
             const message = await page.evaluate(async () => {
                 const message = await new Promise(resolve => {
-                    const messageContainerSelector = '#pmsg_container'
-                    const interval = window.setInterval(() => {
-                        const messageContainer = document.querySelector(messageContainerSelector)
-
-                        if (messageContainer === null) {
-                            return
-                        }
-
-                        if (messageContainer.children.length === 1) {
-                            const message = messageContainer.children[0]
-                        if (message.classList.contains('PMsgError')) {
-                                resolve(message.innerText)
-                                clearInterval(interval)
-                            } else {
-                                resolve(true)
-                                clearInterval(interval)
+                    const container = document.querySelector('#root')
+                
+                    const mutationCallback = function (mutationsList, observer) {
+                        for (const mutation of mutationsList) {
+                            if (mutation.type === 'childList') {
+                                if (mutation.addedNodes.length) {
+                                    resolve(mutation.addedNodes[0].innerText)
+                                    observer.disconnect()
+                                }
                             }
                         }
-
-                    }, 4)
+                    }
+                
+                    const mutationObserver = new MutationObserver(mutationCallback)
+                    mutationObserver.observe(container, {childList: true})
                 })
 
                 return message
@@ -101,6 +96,11 @@ export default function (login, password, content, config = {}) {
             if (message.includes('Cette question a besoin de plus de détails')) {
                 await browser.close()
                 reject(new Error('Bad Question'))
+            }
+
+            if (! message.includes('Question posée avec succès')) {
+                await browser.close()
+                reject(new Error('Unknown Error : "' + message + '"'))
             }
             
             console.log(message)
