@@ -94,10 +94,17 @@ export default function (login, password, content, link, config = {}) {
                 
                     const mutationObserver = new MutationObserver(mutationCallback)
                     mutationObserver.observe(container, {childList: true})
+
+                    setTimeout(() => resolve('Question déjà posée ?'), 10000)
                 })
 
                 return message
             })
+
+            if (message === 'Question déjà posée ?') {
+                await browser.close()
+                reject(new Error('Maybe Already Posted Question'))
+            }
 
             if (message.includes('Cette question a besoin de plus de détails')) {
                 await browser.close()
