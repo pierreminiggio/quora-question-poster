@@ -61,7 +61,14 @@ export default function (login, password, content, link, config = {}) {
 
             // Ask a question
             const askQuestionButtonSelector = 'button'
-            await page.waitForSelector(askQuestionButtonSelector)
+            try {
+                await page.waitForSelector(askQuestionButtonSelector)
+            } catch (e) {
+                await browser.close()
+                reject('You are likely banned from quora')
+                return
+            }
+            
             await page.click(askQuestionButtonSelector)
 
             const questionInputSelector = 'textarea'
