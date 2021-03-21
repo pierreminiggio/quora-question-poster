@@ -128,9 +128,11 @@ export default function (login, password, content, link, config = {}) {
                 await dialog.accept()
             })
             
-            const finishButtonSelector = '.modal_content_inner>div>div>div+div+div .puppeteer_test_modal_primary_button>button'
-            await page.waitForSelector(finishButtonSelector)
-            await page.click(finishButtonSelector)
+            // Finish 
+            await page.waitForTimeout(3000)
+            await page.evaluate(() => {
+                document.querySelectorAll('.modal_content_inner')[1].querySelector('.q-box.qu-mr--small+button').click()
+            })
 
             await page.waitForTimeout(3000)
 
@@ -139,7 +141,7 @@ export default function (login, password, content, link, config = {}) {
              */
             await page.evaluate(() => {
                 const buttonsToClick = Array.from(document.querySelectorAll(
-                    '.modal_content_inner>div>div>div+div>div+div+div.q-flex>div+div .q-click-wrapper'
+                    '[name="CirclePlus"]'
                 )).slice(0, 26)
                 console.log(buttonsToClick)
                 buttonsToClick.forEach(button => button.click())
@@ -147,9 +149,11 @@ export default function (login, password, content, link, config = {}) {
 
             await page.waitForTimeout(3000)
 
-            const finallyFinishButtonSelector = '.q-box[style*="display: initial"]>div>div>div>div+.modal_content_inner>div>div>div+div+div .puppeteer_test_modal_primary_button>button'
-            await page.waitForSelector(finallyFinishButtonSelector)
-            await page.click(finallyFinishButtonSelector)
+            // Finish 
+            await page.waitForTimeout(3000)
+            await page.evaluate(() => {
+                document.querySelectorAll('.modal_content_inner')[2].querySelectorAll('button')[1].click()
+            })
 
             await page.waitForTimeout(10000)
             
