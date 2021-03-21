@@ -38,9 +38,9 @@ export default function (login, password, content, link, config = {}) {
             await page.goto('https://fr.quora.com')
 
             // login
-            const loginInputSelector = 'input.header_login_text_box[name="email"]'
-            const passwordInputSelector = 'input.header_login_text_box[name="password"]'
-            const buttonSelector = 'input.submit_button[value="Se connecter"]'
+            const loginInputSelector = '#email'
+            const passwordInputSelector = '#password'
+            const buttonSelector = '.q-text+button'
 
             await page.waitForSelector(loginInputSelector)
             await page.waitForSelector(passwordInputSelector)
@@ -48,16 +48,14 @@ export default function (login, password, content, link, config = {}) {
 
             await page.waitForTimeout(3000)
 
-            await page.evaluate((loginInputSelector, passwordInputSelector, login, password) => {
-                document.querySelector(loginInputSelector).value = login
-                document.querySelector(passwordInputSelector).value = password
-            }, loginInputSelector, passwordInputSelector, login, password)
+            await type(page, loginInputSelector, login)
+            await type(page, passwordInputSelector, password)
 
-            await page.evaluate(buttonSelector => {
-                const button = document.querySelector(buttonSelector)
-                button.className = 'submit_button'
-                button.click()
-            }, buttonSelector)
+            await page.waitForTimeout(1000)
+
+            await page.click(buttonSelector)
+
+            await page.waitForTimeout(3000)
 
             // Ask a question
             const askQuestionButtonSelector = 'button'
